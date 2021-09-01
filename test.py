@@ -27,7 +27,15 @@ class CompSciUnitTest(unittest.TestCase):
         # query
         search.send_keys(Keys.RETURN)
         
+        
+        #navigate to formula1 website
+        # using xpath we can specify the value of the attribute we'd like to get
+        desired_site = driver.find_element_by_xpath('//a[@href="https://www.formula1.com/en/results.html"]')
+
+        desired_site.click()
+
         # todo: Get the table of data
+        # Scrape the site
         # use the datavisualizer to print driver results
 
         # Pause so I can look at the result
