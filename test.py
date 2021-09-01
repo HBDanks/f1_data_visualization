@@ -1,10 +1,9 @@
 #### Imports ####
 import unittest
-import pandas as pd
-import numpy as np
+import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from pandas_test import DataVisualizer
+from DataVisualizer import DataVisualizer
 
 #Creates Selenium test class and extends testcase
 class CompSciUnitTest(unittest.TestCase):
@@ -14,19 +13,26 @@ class CompSciUnitTest(unittest.TestCase):
     def test_search(self):
         driver = self.driver
 
-        driver.get("https://www.compscillc.com")
+        driver.get("https://google.com")
         
         #Check if title contains compsci.
-        self.assertIn("CompSci", driver.title)
+        self.assertIn("Google", driver.title)
+        
+        #Get the search bar
+        search = driver.find_element_by_name("q")
 
-        mobile_button = driver.find_element_by_
+        #Fill out search bar
+        search.send_keys("formula 1 championship 2021 race results")
 
-def pandas_test(self):
-    s = pd.Series([1, 2, 4, 8, np.nan, 32])
+        # query
+        search.send_keys(Keys.RETURN)
+        
+        # todo: Get the table of data
+        # use the datavisualizer to print driver results
 
-    print(s)
+        # Pause so I can look at the result
+        time.sleep(10)
 
 
 if __name__ == "__main__":
     unittest.main()
-    pandas_test()
