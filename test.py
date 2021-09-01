@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from pandas_test import DataVisualizer
 
 #Creates Selenium test class and extends testcase
 class CompSciUnitTest(unittest.TestCase):

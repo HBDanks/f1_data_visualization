@@ -1,18 +1,29 @@
+#### Imports ####
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
-class PandasTest():
-    def __init__(self):
-        self.test_array = [1,2,3,4,5]
+plt.close("all")
 
-    def pandas_test(self):
-        series = pd.Series(self.test_array)
+#Create data visualization tool.
+class DataVisualizer():
+    def __init__(self, _data):
+        print("Initializing data visualizer...")
+        self.data = pd.Series(_data)
+        print("Data visualizer initialized.\n\n")
 
-        print(series)
+    def series_plotter(self):
+        # generate pandas series
+        series = self.data
+        series = series.cumsum()
+        series.plot()
+        self.series = series
 
-    def pandas_main(self):
-        self.pandas_test()
+    def series_show(self):
+        plt.show()
+
 
 if __name__ == "__main__":
-    pt = PandasTest()
-    pt.pandas_main()
+    dv = DataVisualizer(np.random.randn(1000))
+    dv.series_plotter()
+    dv.series_show()
