@@ -39,7 +39,7 @@ class CompSciUnitTest(unittest.TestCase):
         # driver.implicitly_wait(1)
         #accept cookies
         try:
-            cookies_accept = WebDriverWait(driver,10).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
+            cookies_accept = WebDriverWait(driver,20).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
             cookies_accept.click()
         except:
             print("Couldn't find the cookies accept button")
@@ -47,8 +47,13 @@ class CompSciUnitTest(unittest.TestCase):
 
         # todo: Get the table of data
         # Scrape the site
-        race_links = driver.find_elements_by_css_selector('a.ArchiveLink')
+        race_links = driver.find_elements_by_xpath('//a[contains(@href,"2021/races/")]')
+        # print("Race Links \n\n")
+        # print(race_links)
+        # print("\n\n")
         for race in race_links:
+            # WebDriverWait(driver, 10).until(ec.element_to_be_clickable((B)))
+            print(race)
             race.click()
             # find table
 
@@ -56,7 +61,6 @@ class CompSciUnitTest(unittest.TestCase):
             # - Driver name, position, points scored
             
             # pass data off to data visualizer.
-            driver.implicitly_wait(10)
         print(race_links)
         # use the datavisualizer to print driver results
 
