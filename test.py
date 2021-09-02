@@ -2,7 +2,10 @@
 import unittest
 import time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
 from DataVisualizer import DataVisualizer
 
 #Creates Selenium test class and extends testcase
@@ -30,12 +33,31 @@ class CompSciUnitTest(unittest.TestCase):
         
         #navigate to formula1 website
         # using xpath we can specify the value of the attribute we'd like to get
-        desired_site = driver.find_element_by_xpath('//a[@href="https://www.formula1.com/en/results.html"]')
+        desired_site = driver.find_element_by_xpath('//a[contains(@href,"www.formula1.com")]')
 
         desired_site.click()
+        # driver.implicitly_wait(1)
+        #accept cookies
+        try:
+            cookies_accept = WebDriverWait(driver,10).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
+            cookies_accept.click()
+        except:
+            print("Couldn't find the cookies accept button")
+            driver.quit()
 
         # todo: Get the table of data
         # Scrape the site
+        race_links = driver.find_elements_by_css_selector('a.ArchiveLink')
+        for race in race_links:
+            race.click()
+            # find table
+
+            # get data from table
+            # - Driver name, position, points scored
+            
+            # pass data off to data visualizer.
+            driver.implicitly_wait(10)
+        print(race_links)
         # use the datavisualizer to print driver results
 
         # Pause so I can look at the result
