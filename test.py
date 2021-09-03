@@ -41,9 +41,12 @@ class CompSciUnitTest(unittest.TestCase):
         # driver.implicitly_wait(1)
         #accept cookies
         try:
+<<<<<<< HEAD
             # Cookies popup isn't immediately present so we wait for it to show up.
             # WebDriverWait repeatedly checks for the condition listed in the until function.
             # In this case we've also added a timeout limit of 20 seconds
+=======
+>>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
             cookies_accept = WebDriverWait(driver,20).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
             cookies_accept.click()
         except:
@@ -52,6 +55,7 @@ class CompSciUnitTest(unittest.TestCase):
 
         # todo: Get the table of data
         # Scrape the site
+<<<<<<< HEAD
         race_links = driver.find_elements_by_xpath('//li[@class="resultsarchive-filter-item"]//a[contains(@href,"2021/races/")]')
         # print("Race Links \n\n")
         # print(race_links)
@@ -72,6 +76,16 @@ class CompSciUnitTest(unittest.TestCase):
             # Potentially try out
             # currently this just hard pauses all steps
             time.sleep(5)
+=======
+        race_links = driver.find_elements_by_xpath('//a[contains(@href,"2021/races/")]')
+        # print("Race Links \n\n")
+        # print(race_links)
+        # print("\n\n")
+        for race in race_links:
+            # WebDriverWait(driver, 10).until(ec.element_to_be_clickable((B)))
+            print(race)
+            race.click()
+>>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
             # find table
             # races_table.insert(dict(name=race.text))
             # WebDriverWait(driver,10).until(ec.element_to_be_clickable((By.XPATH,'//table[contains(@class,"resultsarchive-table")]/tbody/tr')))
@@ -95,6 +109,7 @@ class CompSciUnitTest(unittest.TestCase):
             # - Driver name, position, points scored
             
             # pass data off to data visualizer.
+<<<<<<< HEAD
         # Custom query
         results = self.db.query('SELECT * FROM races')
         print(results)
@@ -102,6 +117,9 @@ class CompSciUnitTest(unittest.TestCase):
             print(race['name'])
             print(race['BAHRAIN'])
         print(races_table.columns)
+=======
+        print(race_links)
+>>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
         # use the datavisualizer to print driver results
         # find users with points at azerbaijan
         azb_scorers = races_table.find('AZERBAIJAN'>0)
