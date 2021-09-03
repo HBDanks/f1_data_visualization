@@ -1,6 +1,7 @@
 #### Imports ####
 import unittest
 import time
+import dataset
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -12,6 +13,7 @@ from DataVisualizer import DataVisualizer
 class CompSciUnitTest(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Chrome()
+        self.db = dataset.connect('sqlite:///./testdb.db')
     
     def test_search(self):
         driver = self.driver
@@ -39,7 +41,10 @@ class CompSciUnitTest(unittest.TestCase):
         # driver.implicitly_wait(1)
         #accept cookies
         try:
-            cookies_accept = WebDriverWait(driver,10).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
+            # Cookies popup isn't immediately present so we wait for it to show up.
+            # WebDriverWait repeatedly checks for the condition listed in the until function.
+            # In this case we've also added a timeout limit of 20 seconds
+            cookies_accept = WebDriverWait(driver,20).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
             cookies_accept.click()
         except:
             print("Couldn't find the cookies accept button")
@@ -47,18 +52,59 @@ class CompSciUnitTest(unittest.TestCase):
 
         # todo: Get the table of data
         # Scrape the site
-        race_links = driver.find_elements_by_css_selector('a.ArchiveLink')
-        for race in race_links:
-            race.click()
+        race_links = driver.find_elements_by_xpath('//li[@class="resultsarchive-filter-item"]//a[contains(@href,"2021/races/")]')
+        # print("Race Links \n\n")
+        # print(race_links)
+        # print("\n\n")
+        races_table = self.db['races']
+        race_count = len(race_links)
+        for i in range(race_count):
+            # Is there a better way to get this without them going stale?
+            # Currently when a link is clicked it refreshes the whole section including the filter
+            # causing the links to go stale over time.
+            r_links = driver.find_elements_by_xpath('//li[@class="resultsarchive-filter-item"]//a[contains(@href,"2021/races/")]')
+            # WebDriverWait(driver, 10).until(ec.element_to_be_clickable(race)).click()
+            # race.send_keys(Keys.RETURN)
+            race_name = r_links[i].text
+            print(r_links[i].text)
+            r_links[i].click()
+            # is there a better method to wait on an asynchronous call?
+            # Potentially try out
+            # currently this just hard pauses all steps
+            time.sleep(5)
             # find table
+            # races_table.insert(dict(name=race.text))
+            # WebDriverWait(driver,10).until(ec.element_to_be_clickable((By.XPATH,'//table[contains(@class,"resultsarchive-table")]/tbody/tr')))
 
+            results = driver.find_elements_by_xpath('//table[contains(@class,"resultsarchive-table")]/tbody/tr')
+            
+            for result in results:
+                columns = result.find_elements_by_tag_name('td')
+                name = columns[3].text
+                pts = columns[7].text
+                print(name, pts)
+                db_set = dict()
+                db_set['name'] = columns[3].text
+                db_set[race_name] = columns[7].text
+
+                if races_table.find(name=db_set['name']):
+                    races_table.update(db_set, ['name'])
+                else:
+                    races_table.insert(db_set)
             # get data from table
             # - Driver name, position, points scored
             
             # pass data off to data visualizer.
-            driver.implicitly_wait(10)
-        print(race_links)
+        # Custom query
+        results = self.db.query('SELECT * FROM races')
+        print(results)
+        for race in races_table:
+            print(race['name'])
+            print(race['BAHRAIN'])
+        print(races_table.columns)
         # use the datavisualizer to print driver results
+        # find users with points at azerbaijan
+        azb_scorers = races_table.find('AZERBAIJAN'>0)
 
         # Pause so I can look at the result
         time.sleep(10)
