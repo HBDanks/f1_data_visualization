@@ -2,12 +2,15 @@
 import unittest
 import time
 import dataset
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+from selenium.common import exceptions as Excpt
 from DataVisualizer import DataVisualizer
+import sys
 
 #Creates Selenium test class and extends testcase
 class CompSciUnitTest(unittest.TestCase):
@@ -41,12 +44,9 @@ class CompSciUnitTest(unittest.TestCase):
         # driver.implicitly_wait(1)
         #accept cookies
         try:
-<<<<<<< HEAD
             # Cookies popup isn't immediately present so we wait for it to show up.
             # WebDriverWait repeatedly checks for the condition listed in the until function.
             # In this case we've also added a timeout limit of 20 seconds
-=======
->>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
             cookies_accept = WebDriverWait(driver,20).until(ec.presence_of_element_located((By.ID, "truste-consent-button")))
             cookies_accept.click()
         except:
@@ -55,7 +55,6 @@ class CompSciUnitTest(unittest.TestCase):
 
         # todo: Get the table of data
         # Scrape the site
-<<<<<<< HEAD
         race_links = driver.find_elements_by_xpath('//li[@class="resultsarchive-filter-item"]//a[contains(@href,"2021/races/")]')
         # print("Race Links \n\n")
         # print(race_links)
@@ -70,22 +69,12 @@ class CompSciUnitTest(unittest.TestCase):
             # WebDriverWait(driver, 10).until(ec.element_to_be_clickable(race)).click()
             # race.send_keys(Keys.RETURN)
             race_name = r_links[i].text
-            print(r_links[i].text)
+
             r_links[i].click()
             # is there a better method to wait on an asynchronous call?
             # Potentially try out
             # currently this just hard pauses all steps
-            time.sleep(5)
-=======
-        race_links = driver.find_elements_by_xpath('//a[contains(@href,"2021/races/")]')
-        # print("Race Links \n\n")
-        # print(race_links)
-        # print("\n\n")
-        for race in race_links:
-            # WebDriverWait(driver, 10).until(ec.element_to_be_clickable((B)))
-            print(race)
-            race.click()
->>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
+            time.sleep(3)
             # find table
             # races_table.insert(dict(name=race.text))
             # WebDriverWait(driver,10).until(ec.element_to_be_clickable((By.XPATH,'//table[contains(@class,"resultsarchive-table")]/tbody/tr')))
@@ -94,38 +83,68 @@ class CompSciUnitTest(unittest.TestCase):
             
             for result in results:
                 columns = result.find_elements_by_tag_name('td')
-                name = columns[3].text
-                pts = columns[7].text
-                print(name, pts)
                 db_set = dict()
                 db_set['name'] = columns[3].text
                 db_set[race_name] = columns[7].text
-
-                if races_table.find(name=db_set['name']):
-                    races_table.update(db_set, ['name'])
-                else:
-                    races_table.insert(db_set)
+                races_table.insert(db_set)
+                # if races_table.find(name=db_set['name']):
+                #     races_table.update(db_set, ['name'])
+                # else:
+                #     races_table.insert(db_set)
             # get data from table
             # - Driver name, position, points scored
             
             # pass data off to data visualizer.
-<<<<<<< HEAD
         # Custom query
         results = self.db.query('SELECT * FROM races')
-        print(results)
-        for race in races_table:
-            print(race['name'])
-            print(race['BAHRAIN'])
+        db_table = self.db.load_table('races')
+        table = {}
+        for row in db_table:
+            table[row['name']] = []
+            for col in races_table.columns:
+                if col != 'id' or col != 'name':
+                    table[row['name']].append(row[col])
+        print(table)
+        print(pd.DataFrame(table), races_table.columns)
+        # print(db_table)
         print(races_table.columns)
-=======
-        print(race_links)
->>>>>>> d986896ab732b3346d45fe6a5f8cbfe5c816b008
         # use the datavisualizer to print driver results
         # find users with points at azerbaijan
-        azb_scorers = races_table.find('AZERBAIJAN'>0)
+        # azb_scorers = races_table.find(azerbaijan>0)
 
         # Pause so I can look at the result
         time.sleep(10)
+    
+    def test_compsci(self):
+        driver = self.driver
+
+        driver.get('https://www.compscillc.com/')
+
+        self.assertIn('CompSci', driver.title)
+
+        try:
+            WebDriverWait(driver,5).until(ec.element_to_be_clickable((By.XPATH, '//a[@href="/about"]')))
+            print("The About button is clickable")
+        except:
+            print("The about button did not become clickable within 5 seconds.")
+            #Prints the last most recent exception. In this case it should be a timeout exception
+            print(sys.exc_info()[0])
+
+        try:
+            print("Testing about button for clickability...\n\n")
+            driver.find(By.XPATH, '//a[@href="/about"]').click()
+            print("Found and clicked about button")
+        except Excpt.ElementClickInterceptedException:
+            print("About button was not clickable, click intercepted")
+            print(Excpt.ElementClickInterceptedException.msg)
+        except Excpt.NoSuchElementException:
+            print("Element not found")
+            print(Excpt.NoSuchElementException.msg)
+        except:
+            print("Error when trying to find and click about button")
+            print(sys.exc_info()[0])
+        finally:
+            print("About button clickability test finished.")
 
 
 if __name__ == "__main__":
